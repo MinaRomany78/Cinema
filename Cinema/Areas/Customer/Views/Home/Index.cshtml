@@ -1,0 +1,267 @@
+﻿@model IEnumerable<Movie>
+
+<!-- Carousel Section -->
+<!-- Carousel Section (Full Width) -->
+<div class="container-fluid p-0">
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active" data-bs-interval="3000">
+                <div class="carousel-bg d-flex flex-column justify-content-center align-items-center text-center text-white"
+                     style="background-image: url('/assets/images/movies/1.jpg');">
+                    <div class="animate__animated animate__fadeInUp">
+                        <h1 class="display-4 fw-bold">Epic Adventures</h1>
+                        <p class="lead fs-5">Experience the thrill like never before</p>
+
+                        <a href="~/customer/Movies/index" class="btn btn-light btn-lg px-4 py-2 mt-3">Explore</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item" data-bs-interval="3000">
+                <div class="carousel-bg d-flex flex-column justify-content-center align-items-center text-center text-white"
+                     style="background-image: url('/assets/images/movies/1.jpeg');">
+                    <div class="animate__animated animate__fadeInUp">
+                        <h1 class="display-4 fw-bold">Blockbuster Hits</h1>
+                        <p class="lead fs-5">Your favorite films, now streaming</p>
+
+                        <a href="~/customer/Movies/index" class="btn btn-light btn-lg px-4 py-2 mt-3">Ticket Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item" data-bs-interval="4000">
+                <div class="carousel-bg d-flex flex-column justify-content-center align-items-center text-center text-white"
+                     style="background-image: url('/assets/images/movies/2.jpg');">
+                    <div class="animate__animated animate__fadeInUp">
+                        <h1 class="display-4 fw-bold">New Releases</h1>
+                        <p class="lead fs-5">Stay updated with the latest</p>
+
+                        <a href="~/customer/Movies/index" class="btn btn-light btn-lg px-4 py-2 mt-3">Show More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+</div>
+
+<!-- Cards Section -->
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold text-center">Available Movies</h2>
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-3 col-sm-6">
+                <div class="card movie-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                    <img src="/assets/images/movies/@item.ImgUrl" class="card-img-top" alt="Movie">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-semibold">@item.Name</h5>
+                        <p class="card-text  mb-3">@item.Description.Substring(0, Math.Min(50, item.Description.Length))...</p>
+                        <a href="#" class="custom-btn mt-3" data-bs-toggle="modal" data-bs-target="#trailerModal" data-video="@item.TrailerUrl">Watch Now Ads</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="~/customer/Movies/index" class="custom-btn mt-3">Show More</a>
+    </div>
+</div>
+
+<!-- Modal for Trailer -->
+<div class="modal fade" id="trailerModal" tabindex="-1" aria-labelledby="trailerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Movie Ads</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="stopVideo()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ratio ratio-16x9">
+                    <iframe id="trailerFrame" src="" title="YouTube video" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Styles + Theme Variables -->
+<style>
+    :root {
+        --bg-color-light: #ffffff;
+        --text-color-light: #333333;
+        --card-bg-light: #ffffff;
+        --card-text-light: #333333;
+    }
+
+    body.dark-mode {
+        --bg-color-light: #1e1e1e;
+        --text-color-light: #f1f1f1;
+        --card-bg-light: #2a2a2a;
+        --card-text-light: #eee;
+    }
+
+    body {
+        background-color: var(--bg-color-light);
+        color: var(--text-color-light);
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .movie-card {
+        background-color: var(--card-bg-light);
+        color: var(--card-text-light);
+        border: none;
+        border-radius: 15px;
+        height: 100%;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s, color 0.3s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+        .movie-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .movie-card .card-img-top {
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+        .movie-card .card-body {
+            padding: 20px;
+            background-color: transparent;
+        }
+
+        .movie-card .card-title,
+        .movie-card .card-text {
+            color: inherit;
+            
+        }
+
+        .movie-card .btn {
+            border-radius: 30px;
+            font-size: 0.9rem;
+            padding: 6px 18px;
+            background: #1abc9c;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+    body.dark-mode .movie-card .btn {
+        background: #16a085;
+    }
+
+    /* Optional animation style */
+    .animate__animated {
+        animation-duration: 1s;
+        animation-fill-mode: both;
+    }
+
+    .carousel-bg {
+        width: 100%;
+        height: 550px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        position: relative;
+    }
+
+        .carousel-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2));
+            z-index: 0;
+        }
+
+        .carousel-bg > * {
+            position: relative;
+            z-index: 1;
+        }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+        padding: 12px;
+    }
+
+    .carousel-indicators button {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background-color: #ffffffaa;
+        border: none;
+        margin: 0 4px;
+    }
+
+    .carousel-indicators .active {
+        background-color: #ffffff;
+    }
+
+    .custom-btn {
+        background-color: #1abc9c;
+        color: white;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 24px;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: 0 0 15px rgba(26, 188, 156, 0.4);
+        transition: background-color 0.3s, transform 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+        .custom-btn:hover {
+            background-color: #16a085;
+            transform: translateY(-2px);
+        }
+
+</style>
+
+<!-- Theme Scripts -->
+<script>
+    const trailerModal = document.getElementById('trailerModal');
+
+    trailerModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const videoUrl = button.getAttribute('data-video');
+        const iframe = document.getElementById("trailerFrame");
+
+        if (videoUrl.includes("watch?v=")) {
+            iframe.src = videoUrl.replace("watch?v=", "embed/");
+        } else {
+            iframe.src = videoUrl;
+        }
+    });
+
+    function stopVideo() {
+        document.getElementById("trailerFrame").src = "";
+    }
+
+    trailerModal.addEventListener('hidden.bs.modal', stopVideo);
+
+   
+</script>
+
+<!-- Animation CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />

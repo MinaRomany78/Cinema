@@ -1,0 +1,313 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MovieBooking</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MovieBooking.styles.css" asp-append-version="true" />
+
+    <style>
+        .footer-modern {
+            background: linear-gradient(90deg, #141e30, #243b55);
+            color: #f1f1f1;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+            .footer-modern a.footer-link {
+                color: #f1f1f1;
+                text-decoration: none;
+                transition: color 0.3s;
+            }
+
+                .footer-modern a.footer-link:hover {
+                    color: #00bcd4;
+                    text-decoration: underline;
+                }
+
+        .light-mode .footer-modern {
+            background: linear-gradient(120deg, #e3f2fd, #ffffff);
+            color: #212529;
+            border-top: 1px solid #dee2e6;
+        }
+
+            .light-mode .footer-modern a.footer-link {
+                color: #212529;
+            }
+
+        :root {
+            --bg-color-light: #ffffff;
+            --bg-color-dark: #121212;
+            --text-color-light: #212529;
+            --text-color-dark: #f1f1f1;
+            --nav-bg-light: #f8f9fa;
+            --nav-bg-dark: #1f1f1f;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+            body.light-mode {
+                background-color: var(--bg-color-light);
+                color: var(--text-color-light);
+            }
+
+            body.dark-mode {
+                background-color: var(--bg-color-dark);
+                color: var(--text-color-dark);
+            }
+
+        .navbar {
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .light-mode .navbar {
+            background-color: var(--nav-bg-light) !important;
+        }
+
+        .dark-mode .navbar {
+            background-color: var(--nav-bg-dark) !important;
+        }
+
+        .navbar .nav-link,
+        .navbar .navbar-brand,
+        .navbar .dropdown-toggle {
+            color: inherit !important;
+        }
+
+            .navbar .nav-link:hover,
+            .navbar .dropdown-toggle:hover {
+                color: #00bcd4 !important;
+            }
+
+        .container {
+            flex: 1 0 auto;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            flex-shrink: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .light-mode .footer {
+            background-color: var(--footer-bg-light);
+            color: white;
+        }
+
+        .dark-mode .footer {
+            background-color: var(--footer-bg-dark);
+            color: var(--text-color-dark);
+        }
+
+        .movie-card img {
+            border-radius: 8px;
+            width: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .movie-card img:hover {
+                transform: scale(1.05);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            }
+
+        #themeToggle {
+            border-radius: 50%;
+            padding: 6px 10px;
+            font-size: 16px;
+            border: none;
+            background: none;
+            color: inherit;
+        }
+
+        main {
+            flex: 1 0 auto; /* يملأ أي مساحة متوفرة */
+        }
+
+        footer.footer-modern {
+            flex-shrink: 0;
+            background: linear-gradient(90deg, #141e30, #243b55);
+            color: #f1f1f1;
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer-modern a.footer-link {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+            .footer-modern a.footer-link:hover {
+                color: #00bcd4;
+                text-decoration: underline;
+            }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg shadow-sm">
+            <div class="container-fluid">
+                <img src="~/assets/images/logoo.png" alt="Cinema Logo" class="navbar-brand-logo" style="width: 40px; height: 40px; margin-right: 10px;" />
+                 <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index"> Cinema </a> 
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">🏡Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Movies" asp-action="Index">🎬 Movies</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Actors" asp-action="Index">🎭 Actors</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Categories" asp-action="Index">🎦Categories</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Cinema" asp-action="Index">🎞️Cinemas</a>
+                        </li>
+                    </ul>
+
+                    <form class="d-flex me-3" role="search" asp-controller="Movies" asp-action="Index" method="get">
+                        <input class="form-control me-2" type="search" placeholder="Search Movies..." aria-label="Search" name="MoviesName" value="@Context.Request.Query["MoviesName"]" />
+                       
+                            @if (ViewBag.Categories != null)
+                            {
+                                <select class="form-select me-2" name="CategoryId">
+                                    <option value="0">All Categories</option>
+                                    @foreach (var category in (List<Category>)ViewBag.Categories)
+                                    {
+                                        if (Context.Request.Query["CategoryId"] == category.Id.ToString())
+                                        {
+                                            <option value="@category.Id" selected>
+                                                @category.Name
+                                            </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@category.Id">
+                                                @category.Name
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            }
+
+
+                       
+                       
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                    
+
+
+                    <!-- زر التبديل بين الوضع الليلي والعادي -->
+                    <button id="themeToggle" class="me-3" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+
+                    <div class="dropdown">
+                        <a class="text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg"></i> Mina Romany
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+      
+
+    </main>
+    <footer class="footer-modern py-4 mt-auto">
+        <div class="container-fluid px-4 d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <div class="d-flex align-items-center mb-3 mb-md-0">
+                <i class="fas fa-film me-2 text-info"></i>
+                <span class="fw-semibold">CinemaBooking &copy; 2025</span>
+            </div>
+            <div class="d-flex gap-4">
+                <a href="#" class="footer-link d-flex align-items-center">
+                    <i class="fas fa-shield-alt me-1"></i> Privacy
+                </a>
+                <a href="#" class="footer-link d-flex align-items-center">
+                    <i class="fas fa-gavel me-1"></i> Terms
+                </a>
+                <a href="#" class="footer-link d-flex align-items-center">
+                    <i class="fas fa-envelope me-1"></i> Contact
+                </a>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Toggle Theme Script -->
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const body = document.body;
+
+        function setTheme(mode) {
+            body.classList.remove('light-mode', 'dark-mode');
+            body.classList.add(mode);
+            localStorage.setItem('theme', mode);
+
+            toggleBtn.innerHTML = mode === 'dark-mode'
+                ? '<i class="fas fa-sun"></i>'
+                : '<i class="fas fa-moon"></i>';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            const current = body.classList.contains('dark-mode') ? 'light-mode' : 'dark-mode';
+            setTheme(current);
+        });
+
+        // Apply saved theme on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('theme') || 'light-mode';
+            setTheme(saved);
+        });
+    </script>
+    <!-- AOS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

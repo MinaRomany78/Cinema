@@ -1,0 +1,226 @@
+﻿@using Cinema.ViewModel
+@model CountsModelVM
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<style>
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hover-shadow:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+        transition: all 0.3s ease-in-out;
+    }
+</style>
+
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4 fw-semibold text-dark">Dashboard</h1>
+        <p class="text-muted mb-4">Overview of your Cinema app data</p>
+
+        <!-- Cards -->
+        <div class="row">
+            <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100 hover-shadow">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="text-muted mb-1">Movies</h5>
+                            <h2 class="fw-bold mb-0">@Model.CountMovies</h2>
+                        </div>
+                        <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                            <i class="material-icons fs-1">movie</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100 hover-shadow">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="text-muted mb-1">Cinemas</h5>
+                            <h2 class="fw-bold mb-0">@Model.CountCinema</h2>
+                        </div>
+                        <div class="icon-box bg-warning bg-opacity-10 text-warning">
+                            <i class="material-icons fs-1">theaters</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100 hover-shadow">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="text-muted mb-1">Categories</h5>
+                            <h2 class="fw-bold mb-0">@Model.CountCategories</h2>
+                        </div>
+                        <div class="icon-box bg-info bg-opacity-10 text-info">
+                            <i class="material-icons fs-1">category</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100 hover-shadow">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="text-muted mb-1">Actors</h5>
+                            <h2 class="fw-bold mb-0">@Model.CountActors</h2>
+                        </div>
+                        <div class="icon-box bg-danger bg-opacity-10 text-danger">
+                            <i class="material-icons fs-1">person</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movie Status Tracker -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-bold">Movies Status Tracker</div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between small mb-1">
+                    <span>Upcoming</span><span>@ViewBag.UpcomingPercent%</span>
+                </div>
+                <div class="progress mb-3">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: @ViewBag.UpcomingPercent%"></div>
+                </div>
+
+                <div class="d-flex justify-content-between small mb-1">
+                    <span>Available</span><span>@ViewBag.AvailablePercent%</span>
+                </div>
+                <div class="progress mb-3">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: @ViewBag.AvailablePercent%"></div>
+                </div>
+
+                <div class="d-flex justify-content-between small mb-1">
+                    <span>Expired</span><span>@ViewBag.ExpiredPercent%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: @ViewBag.ExpiredPercent%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row">
+            <!-- Bar Chart -->
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar me-1"></i> Movies Per Category
+                    </div>
+                    <div class="card-body"><canvas id="myBarChart" height="250"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Doughnut Chart -->
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie me-1"></i> Movie Status Distribution
+                    </div>
+                    <div class="card-body"><canvas id="movieStatusChart" height="250"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Line Chart -->
+            
+        </div>
+    </div>
+</main>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@section Scripts {
+    <script>
+        // Bar Chart
+        const barCtx = document.getElementById("myBarChart").getContext("2d");
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(ViewBag.CategoryLabels)),
+                datasets: [{
+                    label: "Movies per Category",
+                    data: @Html.Raw(Json.Serialize(ViewBag.CategoryCounts)),
+                    backgroundColor: "rgba(54, 162, 235, 0.7)",
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Doughnut Chart
+        const statusCtx = document.getElementById("movieStatusChart").getContext("2d");
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Upcoming', 'Available', 'Expired'],
+                datasets: [{
+                    data: [
+                        @ViewBag.UpcomingPercent,
+                        @ViewBag.AvailablePercent,
+                        @ViewBag.ExpiredPercent
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 193, 7, 0.7)',
+                        'rgba(40, 167, 69, 0.7)',
+                        'rgba(220, 53, 69, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // Line Chart
+        const moviesLineCtx = document.getElementById("moviesLineChart").getContext("2d");
+        new Chart(moviesLineCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(ViewBag.MonthLabels)),
+                datasets: [{
+                    label: "Movies Added",
+                    data: @Html.Raw(Json.Serialize(ViewBag.MonthlyMovieCounts)),
+                    fill: true,
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                }
+            }
+        });
+    </script>
+}

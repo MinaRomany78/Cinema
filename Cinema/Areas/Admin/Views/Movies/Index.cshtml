@@ -1,0 +1,92 @@
+﻿@model IEnumerable<Movie>
+
+<main>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="display-6 mb-0">All Movies</h2>
+            <a href="/Admin/Movie/Create" class="btn btn-success px-4 py-2">Create</a>
+        </div>
+
+        @if (TempData["success-notification"] is not null)
+        {
+            @section Scripts {
+                <script>
+                    toastr.success('@TempData["success-notification"]')
+                </script>
+            }
+        }
+
+        <div class="table-responsive shadow-sm rounded bg-white">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Cinema</th>
+                        <th>Category</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Price</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Name</td>
+                            <td>
+                                @(
+                                     item.Description.Length > 50
+                                       ? item.Description.Substring(0, 50) + "..."
+                                          : item.Description
+                                        )
+                        </td>
+                        <td>@item.Cinema.Name</td>
+                        <td>@item.Category.Name</td>
+                        <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Price.ToString("C")</td>
+                        <td class="text-end">
+                            <a href="/Admin/Movies/Edit/@item.Id" class="btn btn-warning btn-sm me-2">Edit</a>
+                            <a href="/Admin/Movies/Delete/@item.Id"
+                               class="btn btn-danger btn-sm btn-delete"
+                               data-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
+                                        }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteButtons = document.querySelectorAll(".btn-delete");
+
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function (e) {
+                e.preventDefault();
+
+                const deleteUrl = this.getAttribute("href");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+        });
+    });
+</script>

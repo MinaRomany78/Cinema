@@ -1,0 +1,120 @@
+﻿@model IEnumerable<Category>
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<style>
+    .search-container {
+        max-width: 400px;
+        margin: 20px auto;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 40px 10px 12px;
+        border-radius: 25px;
+        border: 1px solid var(--input-border, #ccc);
+        font-size: 1rem;
+        outline: none;
+        background-color: var(--bg-color-light);
+        color: var(--text-color-light);
+        transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode .search-input {
+        background-color: var(--bg-color-dark);
+        color: var(--text-color-dark);
+        border-color: #555;
+    }
+
+    .search-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0,123,255,.3);
+    }
+
+    .search-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        color: #888;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        margin-top: 20px;
+    }
+
+    .table-custom th {
+        background: #007bff;
+        color: #fff;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .table-custom td {
+        background-color: var(--bg-color-light);
+        color: var(--text-color-light);
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode .table-custom td {
+        background-color: var(--bg-color-dark);
+        color: var(--text-color-dark);
+    }
+
+    .table-custom tbody tr:hover {
+        background: rgba(0, 123, 255, 0.1);
+    }
+
+    body.dark-mode .table-custom tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-primary {
+        transition: background-color 0.3s, color 0.3s;
+    }
+</style>
+
+
+<h1 class="text-center my-4">Categories</h1>
+
+<div class="search-container">
+    <input type="text" id="searchBox" class="search-input" placeholder="Search categories...">
+    <i class="search-icon bi bi-search"></i>
+</div>
+
+<div class="table-container">
+    <table class="table table-striped table-custom">
+        <thead>
+            <tr>
+                
+                <th>Name</th>
+                <th>Show </th>
+            </tr>
+        </thead>
+        <tbody id="categoryTable">
+            @foreach (var category in Model)
+            {
+                <tr>
+                    
+                    <td>@category.Name</td>
+                    <td>
+                        <a class="btn btn-primary" href="~/customer/movies/index?categoryId=@category.Id">Show Movies</a>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.getElementById('searchBox').addEventListener('input', function () {
+      const filter = this.value.toLowerCase();
+      document.querySelectorAll('#categoryTable tr').forEach(row => {
+        const txt = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+        row.style.display = txt.includes(filter) ? '' : 'none';
+      });
+    });
+</script>

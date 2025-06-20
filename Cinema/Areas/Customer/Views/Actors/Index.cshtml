@@ -1,0 +1,99 @@
+﻿@model IEnumerable<Actor>
+@{
+    ViewData["Title"] = "Actors";
+}
+
+<style>
+    .actor-card {
+        background: linear-gradient(135deg, #1f1f1f, #2c3e50);
+        color: #f5f5f5;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .actor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+    .actor-img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    img {
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+
+    .actor-name {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1abc9c;
+    }
+
+    .actor-bio {
+        font-size: 0.9rem;
+        color: #ccc;
+    }
+
+    .btn-details {
+        background: #1abc9c;
+        border: none;
+        border-radius: 30px;
+        padding: 6px 20px;
+        color: white;
+        transition: background 0.3s ease;
+    }
+
+        .btn-details:hover {
+            background: #16a085;
+        }
+</style>
+
+<h1 class="text-center my-4">🎭 Actors</h1>
+<div class="container">
+    <div class="row g-4">
+        @foreach (var actor in Model)
+        {
+            <div class="col-md-4">
+                <div class="card actor-card h-100 text-center p-3">
+                    <img src="/assets/images/cast/@(string.IsNullOrEmpty(actor.ProfilePicture) ? "default-avatar.jpg" : actor.ProfilePicture)"
+                         class="rounded-circle mx-auto d-block"
+                         style="width: 100px; height: 100px; object-fit: cover;" />
+
+                    <div class="card-body">
+                        <h5 class="actor-name">@actor.FirstName @actor.LastName</h5>
+                        <p class="actor-bio">@actor.Bio.Substring(0, Math.Min(120, actor.Bio.Length))...</p>
+                        <a href="/customer/actors/details/@actor.Id" class="btn btn-details mt-2">View Profile</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="row my-3">
+    <div class="col-12 d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="page-item @(ViewBag.currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="~/customer/Actors/index?page=@(ViewBag.currentPage - 1)" tabindex="-1" aria-disabled="@(ViewBag.currentPage == 1 ? "true" : "false")">Previous</a>
+                </li>
+
+                @for (int i = 1; i <= ViewBag.totalNumberOfPages; i++)
+                {
+                    <li class="page-item @(ViewBag.currentPage == i ? "active" : "")" aria-current="@(ViewBag.currentPage == i ? "page" : null)">
+                        <a class="page-link" href="~/customer/Actors/index?page=@i">@i</a>
+                    </li>
+                }
+
+                <li class="page-item @(ViewBag.currentPage == ViewBag.totalNumberOfPages ? "disabled" : "")">
+                    <a class="page-link" href="~/customer/Actors/index?page=@(ViewBag.currentPage + 1)" aria-disabled="@(ViewBag.currentPage == ViewBag.totalNumberOfPages ? "true" : "false")">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
