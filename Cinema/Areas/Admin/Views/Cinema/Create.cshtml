@@ -24,14 +24,18 @@
 
                 <div class="mb-3">
                     <label for="cinemaLogo" class="form-label fw-semibold">Cinema Logo</label>
-                    <input type="file" class="form-control shadow-sm" id="cinemaLogo" name="CinemaLogo"  value="@Model.CinemaLogo"accept="image/*" onchange="previewCinemaLogo(event)">
-                </div>
+                    <input type="file" class="form-control shadow-sm" id="cinemaLogo" name="cinemaLogo" accept="image/*" onchange="previewCinemaLogo(event)">
 
-                <div class="mt-3">
-                    <img id="cinemaLogoPreview"
-                         src="#"
-                         alt="Logo Preview"
-                         style="display: none; max-width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 1px solid #ccc;" />
+                    <span class="text-danger small">
+                        @Html.ValidationMessage("cinemaLogo", new { @class = "text-danger small" })
+                    </span>
+
+                    <div class="mt-3">
+                        <img id="cinemaLogoPreview"
+                             src="#"
+                             alt="Logo Preview"
+                             style="display: none; max-width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 1px solid #ccc;" />
+                    </div>
                 </div>
 
                 <div class="mb-3">

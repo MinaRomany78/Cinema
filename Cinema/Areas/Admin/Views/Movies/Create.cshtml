@@ -78,7 +78,7 @@
                 <div class="mb-3">
                     <label asp-for="Movie.EndDate" class="form-label fw-semibold"></label>
                     <input asp-for="Movie.EndDate" class="form-control shadow-sm" type="date" />
-                    <span asp-validation-for="Movie.EndDate" class="text-danger small"></span>
+                    @Html.ValidationMessage("EndDate", new { @class = "text-danger small" })
                 </div>
 
                 <div class="mb-3">

@@ -20,31 +20,38 @@ namespace Cinema.Areas.Admin.Controllers
             return View(new Models.Cinema());
         }
         [HttpPost]
-        public async Task<IActionResult> Create(Models.Cinema cinema,IFormFile cinemaLogo)
+        public async Task<IActionResult> Create(Models.Cinema cinema, IFormFile cinemaLogo)
         {
-            if (cinemaLogo is not null &&cinemaLogo.Length>0)
-            {
-                var fileName=Guid.NewGuid().ToString() + Path.GetExtension(cinemaLogo.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\assets\\images", fileName);
-                using(var stream=System.IO.File.Create(filePath))
-                {
-                   await cinemaLogo.CopyToAsync(stream);
-                }
-                cinema.CinemaLogo = fileName;
-                _context.SaveChanges();
+            ModelState.Remove("CinemaLogo");
 
-
-            }
-            ModelState.Remove("CinemaLogo"); // Remove the CinemaLogo from ModelState to avoid validation errors
-            if (ModelState.IsValid)
+            if (cinemaLogo == null || cinemaLogo.Length == 0)
             {
-                _context.Cinemas.Add(cinema);
-                _context.SaveChanges();
-                TempData["success-notification"] = "Cinema created successfully!";
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("cinemaLogo", "Please upload a cinema logo.");
             }
-            return View(cinema);
+
+            if (!ModelState.IsValid)
+            {
+                return View(cinema);
+            }
+
+           
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(cinemaLogo.FileName);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\assets\\images", fileName);
+
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await cinemaLogo.CopyToAsync(stream);
+            }
+
+            cinema.CinemaLogo = fileName;
+
+            _context.Cinemas.Add(cinema);
+            await _context.SaveChangesAsync();
+
+            TempData["success-notification"] = "Cinema created successfully!";
+            return RedirectToAction(nameof(Index));
         }
+
         public IActionResult Edit(int id)
         {
             var cinema = _context.Cinemas.Find(id);
@@ -87,10 +94,10 @@ namespace Cinema.Areas.Admin.Controllers
             }
             else
             {
-                cinema.CinemaLogo = existingCinema.CinemaLogo; // احتفظ بالصورة القديمة
+                cinema.CinemaLogo = existingCinema.CinemaLogo;
             }
 
-            ModelState.Remove("CinemaLogo"); // مهم جدًا
+            ModelState.Remove("CinemaLogo"); 
 
             if (!ModelState.IsValid)
             {
