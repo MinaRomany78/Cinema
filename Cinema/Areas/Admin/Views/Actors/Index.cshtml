@@ -4,7 +4,7 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="display-6 mb-0">All Actors</h2>
-            <a href="/Admin/Brand/Create" class="btn btn-success px-4 py-2">Create</a>
+            <a href="/Admin/Actors/Create" class="btn btn-success px-4 py-2">Create</a>
         </div>
 
         @if (TempData["success-notification"] is not null)
@@ -34,7 +34,12 @@
                     {
                         <tr>
                             <td>@item.Id</td>
-                            <td><img src="~/assets/images/cast/@item.ProfilePicture" alt="Alternate Text" /></td>
+                            <td>
+                                <img src="~/assets/images/cast/@item.ProfilePicture"
+                                     alt="Actor Image"
+                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%; border: 1px solid #ccc;" />
+                            </td>
+
 
                             <td>@($"{item.FirstName} {item.LastName}")</td>
 
@@ -56,8 +61,8 @@
 
 
                             <td class="text-end">
-                                <a href="/Admin/Cinema/Edit/@item.Id" class="btn btn-warning btn-sm me-2">Edit</a>
-                                <a href="/Admin/Cinema/Delete/@item.Id"
+                                <a href="/Admin/Actors/Edit/@item.Id" class="btn btn-warning btn-sm me-2">Edit</a>
+                                <a href="/Admin/Actors/Delete/@item.Id"
                                    class="btn btn-danger btn-sm btn-delete"
                                    data-id="@item.Id">Delete</a>
                             </td>

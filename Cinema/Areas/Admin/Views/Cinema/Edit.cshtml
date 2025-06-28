@@ -7,10 +7,10 @@
 <div class="container mt-5">
     <div class="card shadow-lg border-0 rounded-4">
         <div class="card-header bg-primary text-white rounded-top-4">
-            <h3 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Cinema</h3>
+            <h3 class="mb-0"><i class="fas fa-edit me-2"></i> Edit Cinema</h3>
         </div>
         <div class="card-body p-4">
-            <form asp-action="Edit">
+            <form asp-action="Edit" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                 <input type="hidden" asp-for="Id" />
 
@@ -27,9 +27,22 @@
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="CinemaLogo" class="form-label fw-semibold"></label>
-                    <input asp-for="CinemaLogo" class="form-control shadow-sm" />
-                    <span asp-validation-for="CinemaLogo" class="text-danger small"></span>
+                    <label for="cinemaLogo" class="form-label fw-semibold">Cinema Logo</label>
+                    <input class="form-control shadow-sm"
+                           type="file"
+                           id="cinemaLogo"
+                           name="cinemaLogo"
+                           accept="image/*"
+                           onchange="previewCinemaLogo(event)" />
+
+                    <div class="mt-3">
+                        <img id="cinemaLogoPreview"
+                             src="@(string.IsNullOrEmpty(Model.CinemaLogo)
+                                                                          ? "#"
+                                                                          : Url.Content($"~/assets/images/{Model.CinemaLogo}"))"
+                             alt="Cinema Logo Preview"
+                             style="max-width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 1px solid #ccc; display:@(string.IsNullOrEmpty(Model.CinemaLogo) ? "none" : "block");" />
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -50,3 +63,26 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        function previewCinemaLogo(event) {
+            const input = event.target;
+            const preview = document.getElementById('cinemaLogoPreview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '#';
+                preview.style.display = 'none';
+            }
+        }
+    </script>
+}

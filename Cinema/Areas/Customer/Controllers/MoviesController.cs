@@ -13,6 +13,7 @@ namespace Cinema.Areas.Customer.Controllers
         double totalNumberOfProductInPages = 8;
         public IActionResult Index(string? MoviesName, int? CategoryId,int? CinemaId,int page=1)
         {
+            
             var movies = _context.Movies.Include(m => m.Cinema)
                                         .Include(m => m.Category)
                                         .ToList();
@@ -30,7 +31,8 @@ namespace Cinema.Areas.Customer.Controllers
             {
                 movies = movies.Where(m => m.CinemaId == CinemaId).ToList();
             }
-
+            ViewBag.categoryId = CategoryId;
+            ViewBag.searchTerm = MoviesName;
 
             var totalNumberOfPages = Math.Ceiling(movies.Count() / totalNumberOfProductInPages);
             ViewBag.totalNumberOfPages = totalNumberOfPages;

@@ -97,18 +97,34 @@ else
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 <li class="page-item @(ViewBag.currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" href="~/customer/Movies/index?page=@(ViewBag.currentPage - 1)" tabindex="-1" aria-disabled="@(ViewBag.currentPage == 1 ? "true" : "false")">Previous</a>
+                    <a class="page-link" href="@Url.Action("index",new{
+                        page = ViewBag.currentPage - 1, 
+                        CategoryId = ViewBag.categoryId, 
+                        MoviesName = ViewBag.searchTerm
+                        })" tabindex="-1" 
+                    aria-disabled="@(ViewBag.currentPage == 1 ? "true" : "false")">Previous</a>
                 </li>
 
                 @for (int i = 1; i <= ViewBag.totalNumberOfPages; i++)
                 {
                     <li class="page-item @(ViewBag.currentPage == i ? "active" : "")" aria-current="@(ViewBag.currentPage == i ? "page" : null)">
-                        <a class="page-link" href="~/customer/Movies/index?page=@i">@i</a>
+                        <a class="page-link" href="@Url.Action("index",new{
+                        page = i, 
+                        CategoryId = ViewBag.categoryId, 
+                            MoviesName = ViewBag.searchTerm
+
+                        })">@i</a>
                     </li>
                 }
 
                 <li class="page-item @(ViewBag.currentPage == ViewBag.totalNumberOfPages ? "disabled" : "")">
-                    <a class="page-link" href="~/customer/Movies/index?page=@(ViewBag.currentPage + 1)" aria-disabled="@(ViewBag.currentPage == ViewBag.totalNumberOfPages ? "true" : "false")">Next</a>
+                    <a class="page-link" href="@Url.Action("index",new{
+                        page = ViewBag.currentPage + 1, 
+                        CategoryId = ViewBag.categoryId, 
+                            MoviesName = ViewBag.searchTerm
+
+                        })"
+                    aria-disabled="@(ViewBag.currentPage == ViewBag.totalNumberOfPages ? "true" : "false")">Next</a>
                 </li>
             </ul>
         </nav>

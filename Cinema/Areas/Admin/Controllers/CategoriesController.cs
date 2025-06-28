@@ -23,6 +23,7 @@ namespace Cinema.Areas.Admin.Controllers
             {
                 _context.Categories.Add(category);
                 _context.SaveChanges();
+                TempData["success-notification"] = "Category created successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -43,6 +44,7 @@ namespace Cinema.Areas.Admin.Controllers
             {
                 _context.Categories.Update(category);
                 _context.SaveChanges();
+                TempData["success-notification"] = "Category updated successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -56,6 +58,7 @@ namespace Cinema.Areas.Admin.Controllers
             }
             _context.Categories.Remove(category);
             _context.SaveChanges();
+            TempData["success-notification"] = "Category deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
     }
