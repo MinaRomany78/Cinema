@@ -1,18 +1,20 @@
-﻿using Cinema.Data;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class CinemaController : Controller
     {
-        private readonly ApplicationDbContext _context = new();
-
-        public IActionResult Index()
+        //private readonly ApplicationDbContext _context;
+        private ICinemaRepository _cinemaRepository;
+        public CinemaController(ICinemaRepository cinemaRepository)
         {
-            var cinemas = _context.Cinemas.ToList();
+            _cinemaRepository = cinemaRepository;
+        }
+        public async Task<IActionResult> Index()
+        {
+            var cinemas = await _cinemaRepository.GetAsync();
             return View(cinemas);
         }
         public IActionResult Create()
@@ -34,8 +36,8 @@ namespace Cinema.Areas.Admin.Controllers
                 return View(cinema);
             }
 
-           
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(cinemaLogo.FileName);
+            // Fix for CS8602: Ensure cinemaLogo is not null before accessing FileName
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(cinemaLogo?.FileName ?? string.Empty);
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\assets\\images", fileName);
 
             using (var stream = System.IO.File.Create(filePath))
@@ -45,27 +47,27 @@ namespace Cinema.Areas.Admin.Controllers
 
             cinema.CinemaLogo = fileName;
 
-            _context.Cinemas.Add(cinema);
-            await _context.SaveChangesAsync();
+            await _cinemaRepository.CreateAsync(cinema);
 
             TempData["success-notification"] = "Cinema created successfully!";
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var cinema = _context.Cinemas.Find(id);
+            var cinema = await _cinemaRepository.GetOneAsync(c => c.Id == id);
             if (cinema == null)
             {
                 return NotFound();
             }
             return View(cinema);
         }
-        [HttpPost]
+
         [HttpPost]
         public async Task<IActionResult> Edit(Models.Cinema cinema, IFormFile cinemaLogo)
         {
-            var existingCinema = _context.Cinemas.AsNoTracking().FirstOrDefault(e => e.Id == cinema.Id);
+            //var existingCinema = _context.Cinemas.AsNoTracking().FirstOrDefault(e => e.Id == cinema.Id);
+            var existingCinema = await _cinemaRepository.GetOneAsync(c => c.Id == cinema.Id,tracked:false);
             if (existingCinema is null)
             {
                 return NotFound();
@@ -104,22 +106,20 @@ namespace Cinema.Areas.Admin.Controllers
                 return View(cinema);
             }
 
-            _context.Cinemas.Update(cinema);
-            await _context.SaveChangesAsync();
+          await  _cinemaRepository.UpdateAsync(cinema);
             TempData["success-notification"] = "Cinema updated successfully!";
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var cinema = _context.Cinemas.Find(id);
+            var cinema = await _cinemaRepository.GetOneAsync(c => c.Id == id);
 
             if (cinema is not null)
             {
                
-                _context.Cinemas.Remove(cinema);
-                    _context.SaveChanges();
-                 var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\assets\\images", cinema.CinemaLogo);
+               await _cinemaRepository.DeleteAsync(cinema);
+                var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\assets\\images", cinema.CinemaLogo);
                 if (System.IO.File.Exists(oldFilePath))
                 {
                     System.IO.File.Delete(oldFilePath);

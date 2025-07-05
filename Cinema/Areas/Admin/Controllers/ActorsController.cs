@@ -10,10 +10,15 @@ namespace Cinema.Areas.Admin.Controllers
     [Area("Admin")]
     public class ActorsController : Controller
     {
-        private readonly ApplicationDbContext _context = new();
-        public IActionResult Index()
+        //private readonly ApplicationDbContext _context = new();
+        private IActorRepository _actorRepository;
+        public ActorsController( IActorRepository actorRepository)
         {
-            var actors = _context.Actors.ToList();
+            _actorRepository = actorRepository;
+        }
+        public async Task<IActionResult> Index()
+        {
+            var actors =await _actorRepository.GetAsync();
             return View(actors);
         }
         public IActionResult Create()
@@ -33,21 +38,21 @@ namespace Cinema.Areas.Admin.Controllers
                    await ProfilePicture.CopyToAsync(stream);
                 }
                 actor.ProfilePicture = fileName;
-                _context.SaveChanges();
+              await   _actorRepository.Commit();
+
             }
             ModelState.Remove("ProfilePicture");
             if (ModelState.IsValid)
             {
-                _context.Actors.Add(actor);
-                _context.SaveChanges();
+              await   _actorRepository.CreateAsync(actor);
                 TempData["success-notification"] = "Actor created successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return NotFound();
         }
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var actor = _context.Actors.FirstOrDefault(a => a.Id == id);
+            var actor = await _actorRepository.GetOneAsync(c => c.Id == id);
             if (actor != null)
             {
                 return View(actor);
@@ -57,7 +62,7 @@ namespace Cinema.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(Actor actor,IFormFile ProfilePicture)
         {
-            var actorFile = _context.Actors. AsNoTracking().FirstOrDefault(a => a.Id == actor.Id);
+            var actorFile =await _actorRepository.GetOneAsync(c => c.Id == actor.Id,tracked:false);
             if (actorFile is not null)
             {
                 if (ProfilePicture is not null && ProfilePicture.Length > 0)
@@ -85,8 +90,7 @@ namespace Cinema.Areas.Admin.Controllers
             ModelState.Remove("ProfilePicture");
             if (ModelState.IsValid)
             {
-                _context.Actors.Update(actor);
-                _context.SaveChanges();
+                await _actorRepository.UpdateAsync(actor);
                 TempData["success-notification"] = "Actor updated successfully!";
                 return RedirectToAction(nameof(Index));
 
@@ -96,13 +100,12 @@ namespace Cinema.Areas.Admin.Controllers
             
         }
         
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var actor = _context.Actors.FirstOrDefault(a => a.Id == id);
+            var actor = await _actorRepository.GetOneAsync(c => c.Id == id);
             if (actor != null)
             {
-                _context.Actors.Remove(actor);
-                _context.SaveChanges();
+                await _actorRepository.DeleteAsync(actor);
                 var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\assets\\images\\cast", actor.ProfilePicture);
                 if (System.IO.File.Exists(oldFilePath))
                 {

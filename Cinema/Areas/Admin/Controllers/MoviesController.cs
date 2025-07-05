@@ -1,29 +1,55 @@
-﻿using Cinema.Data;
+﻿
 using Cinema.Data.Enums;
-using Cinema.Models;
+
 using Cinema.ViewModel;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+
 
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class MoviesController : Controller
     {
-        private readonly ApplicationDbContext _Context = new();
+        //  private readonly ApplicationDbContext _Context = new();
+        private readonly IMovieRepository _moviesRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly ICinemaRepository _cinemaRepository;
+        private readonly IActorRepository _actorRepository;
+        private readonly IActorMoviesRepository _actorMoviesRepository;
 
-        public IActionResult Index()
+        public MoviesController(
+            IMovieRepository moviesRepository,
+            ICategoryRepository categoryRepository,
+            ICinemaRepository cinemaRepository,
+            IActorRepository actorRepository,
+            IActorMoviesRepository actorMoviesRepository)
         {
-            var Movies = _Context.Movies.Include(e => e.Cinema).Include(e => e.Category);
-
-            return View(Movies.ToList());
+            _moviesRepository = moviesRepository;
+            _categoryRepository = categoryRepository;
+            _cinemaRepository = cinemaRepository;
+            _actorRepository = actorRepository;
+            _actorMoviesRepository = actorMoviesRepository; // Assuming you have an implementation for this
         }
-        public IActionResult Create()
+        public async Task<IActionResult> Index()
         {
-            var Cinemas = _Context.Cinemas.ToList();
-            var Categories = _Context.Categories.ToList();
-            var Actors = _Context .Actors.ToList();
+            var movies = await _moviesRepository.GetAsync(
+                include: new Expression<Func<Movie, object>>[]
+                {
+                    e => e.Cinema,
+                    e => e.Category,
+                }
+            );
+
+            return View(movies);
+        }
+
+        public async Task<IActionResult> Create()
+        {
+            var Cinemas = (await _cinemaRepository.GetAsync()).ToList();
+            var Categories = (await _categoryRepository.GetAsync()).ToList();
+            var Actors = (await _actorRepository.GetAsync()).ToList();
             CinemawithCategoryVm vm = new()
             {
                 Cinemas = Cinemas,
@@ -74,32 +100,30 @@ namespace Cinema.Areas.Admin.Controllers
 
                 vm.Movie.MovieStatus = check(vm.Movie.StartDate, vm.Movie.EndDate);
 
-                _Context.Movies.Add(vm.Movie);
-                await _Context.SaveChangesAsync();
+                await _moviesRepository.CreateAsync(vm.Movie);
 
                 // ربط الممثلين
                 if (vm.SelectedActorIds != null && vm.SelectedActorIds.Any())
                 {
                     foreach (var actorId in vm.SelectedActorIds)
                     {
-                        _Context.ActorMovies.Add(new ActorMovie
+                        await _actorMoviesRepository.CreateAsync(new ActorMovie
                         {
                             MovieId = vm.Movie.Id,
                             ActorId = actorId
                         });
                     }
-                    await _Context.SaveChangesAsync();
+                    await _actorMoviesRepository.Commit();
                 }
 
                 TempData["success-notification"] = "Movie added successfully.";
                 return RedirectToAction(nameof(Index));
             }
 
-            // إعادة تحميل البيانات في حال وجود خطأ
-            vm.Cinemas = _Context.Cinemas.ToList();
-            vm.Categories = _Context.Categories.ToList();
-            vm.ActorList = _Context.Actors.ToList();
-
+            // إعادة تحميل البيانات في حال وجود خطأ(
+            vm.Cinemas =( await _cinemaRepository.GetAsync()).ToList();
+            vm.Categories = (await _categoryRepository.GetAsync()).ToList();
+            vm.ActorList = (await _actorRepository.GetAsync()).ToList();
             return View(vm);
         }
 
@@ -118,20 +142,23 @@ namespace Cinema.Areas.Admin.Controllers
                 return MovieStatus.Expired;
 
         }
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var movie = _Context.Movies
-                .Include(e => e.Cinema)
-                .Include(e => e.Category)
-                .Include(e => e.ActorMovies) 
-                .FirstOrDefault(e => e.Id == id);
+            var movie = await _moviesRepository.GetOneAsync(
+               e => e.Id == id,
+               include: new Expression<Func<Movie, object>>[]
+               {
+                    e => e.Cinema,
+                    e => e.Category,
+                    e => e.ActorMovies
+               });
 
             if (movie is null)
                 return NotFound();
 
-            var Cinemas = _Context.Cinemas.ToList();
-            var Categories = _Context.Categories.ToList();
-            var Actors = _Context.Actors.ToList();
+            var Cinemas =(await _cinemaRepository.GetAsync()).ToList();
+            var Categories = (await _categoryRepository.GetAsync()).ToList();
+            var Actors = (await _actorRepository.GetAsync()).ToList();
 
             CinemawithCategoryVm vm = new()
             {
@@ -156,7 +183,7 @@ namespace Cinema.Areas.Admin.Controllers
             ModelState.Remove("Movie.Cinema");
             ModelState.Remove("Movie.Category");
 
-            var existingMovie = _Context.Movies.AsNoTracking().FirstOrDefault(e => e.Id == vm.Movie.Id);
+            var existingMovie = await _moviesRepository.GetOneAsync(e => e.Id == vm.Movie.Id, tracked: false);
             if (existingMovie == null)
             {
                 return NotFound();
@@ -181,9 +208,9 @@ namespace Cinema.Areas.Admin.Controllers
 
             if (!ModelState.IsValid)
             {
-                vm.Cinemas = _Context.Cinemas.ToList();
-                vm.Categories = _Context.Categories.ToList();
-                vm.ActorList = _Context.Actors.ToList();
+                vm.Cinemas = (await _cinemaRepository.GetAsync()).ToList();
+                vm.Categories = (await _categoryRepository.GetAsync()).ToList();
+                vm.ActorList = (await _actorRepository.GetAsync()).ToList();
                 return View(vm);
             }
 
@@ -214,51 +241,58 @@ namespace Cinema.Areas.Admin.Controllers
 
             // Update movie
             vm.Movie.MovieStatus = check(vm.Movie.StartDate, vm.Movie.EndDate);
-            _Context.Movies.Update(vm.Movie);
-            await _Context.SaveChangesAsync();
+            await _moviesRepository.UpdateAsync(vm.Movie);
+
 
             // Update actor relations
-            var existingActorMovies = _Context.ActorMovies.Where(am => am.MovieId == vm.Movie.Id).ToList();
-            _Context.ActorMovies.RemoveRange(existingActorMovies);
-            await _Context.SaveChangesAsync();
-
+            var existingActors = await  _actorMoviesRepository.GetAsync(am => am.MovieId == vm.Movie.Id);
+            foreach (var am in existingActors)
+            {
+                await _actorMoviesRepository.DeleteAsync(am);
+            }
             if (vm.SelectedActorIds != null && vm.SelectedActorIds.Any())
             {
                 foreach (var actorId in vm.SelectedActorIds)
                 {
-                    _Context.ActorMovies.Add(new ActorMovie
+                    await _actorMoviesRepository.CreateAsync(new ActorMovie
                     {
                         MovieId = vm.Movie.Id,
                         ActorId = actorId
                     });
                 }
-                await _Context.SaveChangesAsync();
+                await _actorMoviesRepository.Commit();
             }
 
             TempData["success-notification"] = "Movie updated successfully!";
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
 
-            var movie = _Context.Movies.Include(e => e.Cinema).Include(e => e.Category).FirstOrDefault(e => e.Id == id);
+            var movie = await _moviesRepository.GetOneAsync(
+                            e => e.Id == id,
+                            include: new Expression<Func<Movie, object>>[]
+                            {
+                                    e => e.Cinema,
+                                    e => e.Category
+                            });
             if (movie is not null)
             {
-                _Context.Movies.Remove(movie);
+                await _moviesRepository.DeleteAsync(movie);
                 var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\assets\\images\\movies", movie.ImgUrl);
                 if (System.IO.File.Exists(oldFilePath))
                 {
                     System.IO.File.Delete(oldFilePath);
                 }
-                _Context.SaveChanges();
-                var actorMovies = _Context.ActorMovies.Where(am => am.MovieId == id).ToList();
-                if (actorMovies.Any())
+               await  _moviesRepository.Commit();
+                var actorMovies = await _actorMoviesRepository.GetAsync(am => am.MovieId == id);
+                foreach (var am in actorMovies)
                 {
-                    _Context.ActorMovies.RemoveRange(actorMovies);
-                    _Context.SaveChanges();
-                    TempData["success-notification"] = "Movie deleted successfully!";
+                    await _actorMoviesRepository.DeleteAsync(am);
                 }
+
+                TempData["success-notification"] = "Movie deleted successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return NotFound();
