@@ -1,15 +1,21 @@
-﻿using Cinema.Data;
+﻿
+using Cinema.Repositories.IRepositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context = new();
-        public IActionResult Index()
+        private ICategoryRepository _categoryRepository;
+        public CategoriesController(ICategoryRepository categoryRepository)
         {
-            var categories = _context.Categories.ToList();
+            this._categoryRepository = categoryRepository;
+        }
+        public async Task<IActionResult> Index()
+        {
+            var categories = await _categoryRepository.GetAsync();
             return View(categories);
         }
         public IActionResult Create()
@@ -17,47 +23,44 @@ namespace Cinema.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Models.Category category)
+        public async Task<IActionResult> Create(Models.Category category)
         {
             if (ModelState.IsValid)
             {
-                _context.Categories.Add(category);
-                _context.SaveChanges();
+               await _categoryRepository.CreateAsync(category);
                 TempData["success-notification"] = "Category created successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var category = _context.Categories.Find(id);
+            var category = await _categoryRepository.GetOneAsync(c => c.Id == id);
             if (category == null)
             {
                 return NotFound();
             }
             return View(category);
-        }
+        } 
         [HttpPost]
-        public IActionResult Edit(Models.Category category)
+        public async Task<IActionResult> Edit(Models.Category category)
         {
             if (ModelState.IsValid)
             {
-                _context.Categories.Update(category);
-                _context.SaveChanges();
+              await _categoryRepository.UpdateAsync(category);
                 TempData["success-notification"] = "Category updated successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var category = _context.Categories.Find(id);
+            var category = await _categoryRepository.GetOneAsync(c => c.Id == id);
             if (category == null)
             {
                 return NotFound();
             }
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
+            await _categoryRepository.DeleteAsync(category);
             TempData["success-notification"] = "Category deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
