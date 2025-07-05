@@ -131,5 +131,11 @@ namespace Cinema.Areas.Identity.Controllers
             return NotFound();
 
         }
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            TempData["success-notification"] = "Logout successfully!";
+            return RedirectToAction("Index", "Home", new { area = "customer" });
+        }
     }
 }
