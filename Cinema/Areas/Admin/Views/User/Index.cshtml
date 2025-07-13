@@ -1,12 +1,12 @@
-﻿@model IEnumerable<Actor>
-
+﻿
+@model Dictionary<ApplicationUser, string>
 <main>
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="display-6 mb-0">All Actors</h2>
+            <h2 class="display-6 mb-0">All User</h2>
             @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
             {
-                <a href="/Admin/Actors/Create" class="btn btn-success px-4 py-2">Create</a>
+                <a href="/Admin/User/Create" class="btn btn-success px-4 py-2">Create</a>
             }
         </div>
 
@@ -23,52 +23,54 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Profile Picture</th>
-                        <th scope="col">Full Name</th>
-                        <th scope="col">Bio</th>
-                        <th scope="col">News</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">User Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Role</th>
                         @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
                         {
+
                             <th scope="col" class="text-end">Actions</th>
                         }
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.Keys)
                     {
                         <tr>
-                            <td>@item.Id</td>
+                            <td>@(item.FirstName+ ""+item.LastName)</td>
+                            <td>@item.UserName</td>
+                            <td>@item.Email</td>
                             <td>
-                                <img src="~/assets/images/cast/@item.ProfilePicture"
-                                     alt="Actor Image"
-                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%; border: 1px solid #ccc;" />
-                            </td>
+                                @if (Model[item] == $"{SD.SuperAdmin}")
+                                {
+                                    <span class="badge bg-danger">@Model[item]</span>
+                                }
+                                else if (Model[item] == $"{SD.Admin}")
+                                {
+                                    <span class="badge bg-primary">@Model[item]</span>
+                                }
+                                else if (Model[item] == $"{SD.Campany}")
+                                {
+                                    <span class="badge bg-secondary">@Model[item]</span>
 
+                                }
+                                else if (Model[item] == $"{SD.Employee}")
+                                {
+                                    <span class="badge bg-secondary">@Model[item]</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info">@Model[item]</span>
+                                }
+                                </td>
+                            
 
-                            <td>@($"{item.FirstName} {item.LastName}")</td>
-
-                            <td>
-                                @(string.IsNullOrEmpty(item.Bio)
-                                                            ? ""
-                                                            : item.Bio.Length > 50
-                                                            ? item.Bio.Substring(0, 50) + "..."
-                                                            : item.Bio)
-                                                                   </td>
-
-                            <td>
-                                @(string.IsNullOrEmpty(item.News)
-                                                            ? ""
-                                                            : item.News.Length > 50
-                                                            ? item.News.Substring(0, 50) + "..."
-                                                            : item.News)
-                        </td>
-
-                        @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
+                            @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
                             {
                                 <td class="text-end">
-                                    <a href="/Admin/Actors/Edit/@item.Id" class="btn btn-warning btn-sm me-2">Edit</a>
-                                    <a href="/Admin/Actors/Delete/@item.Id"
+                                    <a href="/Admin/User/Edit/@item.Id" class="btn btn-warning btn-sm me-2">Edit</a>
+                                    <a href="/Admin/User/Delete/@item.Id"
                                        class="btn btn-danger btn-sm btn-delete"
                                        data-id="@item.Id">Delete</a>
                                 </td>
@@ -108,3 +110,5 @@
         });
     });
 </script>
+
+

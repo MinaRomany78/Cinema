@@ -1,0 +1,137 @@
+﻿@using Cinema.ViewModel
+@model ProfileVm
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<style>
+    .edit-profile-card {
+        background: rgba(20, 34, 51, 0.9);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        border-radius: 16px;
+        max-width: 600px;
+        margin: 40px auto;
+        color: #fff;
+        box-shadow: 0 8px 32px rgba(26, 188, 156, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+        .edit-profile-card h3 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            color: #1abc9c;
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff !important;
+        padding: 12px;
+        border-radius: 8px;
+        transition: 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: #1abc9c;
+            box-shadow: 0 0 8px rgba(26, 188, 156, 0.6);
+            background-color: rgba(255, 255, 255, 0.07);
+            color: #fff !important;
+        }
+
+        .form-control::placeholder {
+            color: #ccc;
+        }
+
+    .text-danger {
+        font-size: 0.9rem;
+        color: #e74c3c !important;
+    }
+
+    .btn-save {
+        background: #1abc9c;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(26, 188, 156, 0.4);
+        transition: all 0.3s ease;
+    }
+
+        .btn-save:hover {
+            background: #16a085;
+            box-shadow: 0 6px 20px rgba(26, 188, 156, 0.6);
+        }
+
+    .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #1abc9c;
+        text-decoration: none;
+    }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+</style>
+
+<div class="edit-profile-card">
+    <h3>Edit Profile</h3>
+    <form asp-action="EditProfile">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group">
+            <label asp-for="UserName" class="control-label"></label>
+            <input asp-for="UserName" class="form-control" placeholder="Enter your username" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="FirstName" class="control-label"></label>
+            <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="LastName" class="control-label"></label>
+            <input asp-for="LastName" class="form-control" placeholder="Enter your last name" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Address" class="control-label"></label>
+            <input asp-for="Address" class="form-control" placeholder="Enter your address" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Save Changes" class="btn-save" />
+        </div>
+    </form>
+
+    <a asp-action="Profile" class="back-link">
+        ← Back to Profile
+    </a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
