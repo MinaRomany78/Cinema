@@ -1,9 +1,13 @@
 ﻿
+using Cinema.Utilty.DBInitializer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin},{SD.Campany},{SD.Employee}")]
+
     public class CinemaController : Controller
     {
         //private readonly ApplicationDbContext _context;
@@ -17,10 +21,12 @@ namespace Cinema.Areas.Admin.Controllers
             var cinemas = await _cinemaRepository.GetAsync();
             return View(cinemas);
         }
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Create()
         {
             return View(new Models.Cinema());
         }
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         [HttpPost]
         public async Task<IActionResult> Create(Models.Cinema cinema, IFormFile cinemaLogo)
         {
@@ -52,7 +58,7 @@ namespace Cinema.Areas.Admin.Controllers
             TempData["success-notification"] = "Cinema created successfully!";
             return RedirectToAction(nameof(Index));
         }
-
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public async Task<IActionResult> Edit(int id)
         {
             var cinema = await _cinemaRepository.GetOneAsync(c => c.Id == id);
@@ -62,7 +68,7 @@ namespace Cinema.Areas.Admin.Controllers
             }
             return View(cinema);
         }
-
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         [HttpPost]
         public async Task<IActionResult> Edit(Models.Cinema cinema, IFormFile cinemaLogo)
         {
@@ -110,7 +116,7 @@ namespace Cinema.Areas.Admin.Controllers
             TempData["success-notification"] = "Cinema updated successfully!";
             return RedirectToAction(nameof(Index));
         }
-
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public async Task<IActionResult> Delete(int id)
         {
             var cinema = await _cinemaRepository.GetOneAsync(c => c.Id == id);
