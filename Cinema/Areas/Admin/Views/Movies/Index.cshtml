@@ -4,11 +4,7 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="display-6 mb-0">All Movies</h2>
-            @if(User.IsInRole($"{SD.Admin}")||User.IsInRole($"{SD.SuperAdmin}"))
-            {
-                <a href="/Admin/Movies/Create" class="btn btn-success px-4 py-2">Create</a>
-            }
-
+            <a href="/Admin/Movies/Create" class="btn btn-success px-4 py-2">Create</a>
         </div>
 
         @if (TempData["success-notification"] is not null)
@@ -32,11 +28,7 @@
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Price</th>
-                        @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
-                        {
-                            <th class="text-end">Actions</th>
-                        }
-
+                        <th class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,12 +50,10 @@
                         <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
                         <td>@item.Price.ToString("C")</td>
                         <td class="text-end">
-                                @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
-                                {
-                                    <a href="/Admin/Movies/Edit/@item.Id" class="btn btn-warning btn-sm me-2">Edit</a>
-                                    <a href="/Admin/Movies/Delete/@item.Id"
-                                    class="btn btn-danger btn-sm btn-delete"
-                               data-id="@item.Id">Delete</a>}
+                            <a href="/Admin/Movies/Edit/@item.Id" class="btn btn-warning btn-sm me-2">Edit</a>
+                            <a href="/Admin/Movies/Delete/@item.Id"
+                               class="btn btn-danger btn-sm btn-delete"
+                               data-id="@item.Id">Delete</a>
                         </td>
                     </tr>
                                         }

@@ -3,10 +3,7 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="display-6 mb-0">All Category</h2>
-            @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
-            {
-                <a href="/Admin/Categories/Create" class="btn btn-success px-4 py-2">Create</a>
-            }
+            <a href="/Admin/Categories/Create" class="btn btn-success px-4 py-2">Create</a>
         </div>
 
         @if (TempData["success-notification"] is not null)
@@ -24,11 +21,8 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
-                        @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
-                        {
-
-                            <th scope="col" class="text-end">Actions</th>
-                        }
+                        
+                        <th scope="col" class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,15 +31,12 @@
                         <tr>
                             <td>@item.Id</td>
                             <td>@item.Name</td>
-                            @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
-                            {
-                                <td class="text-end">
-                                    <a href="/Admin/Categories/Edit/@item.Id" class="btn btn-warning btn-sm me-2">Edit</a>
-                                    <a href="/Admin/Categories/Delete/@item.Id"
-                                       class="btn btn-danger btn-sm btn-delete"
-                                       data-id="@item.Id">Delete</a>
-                                </td>
-                            }
+                            <td class="text-end">
+                                <a href="/Admin/Categories/Edit/@item.Id" class="btn btn-warning btn-sm me-2">Edit</a>
+                                <a href="/Admin/Categories/Delete/@item.Id"
+                                   class="btn btn-danger btn-sm btn-delete"
+                                   data-id="@item.Id">Delete</a>
+                            </td>
                         </tr>
                     }
                 </tbody>

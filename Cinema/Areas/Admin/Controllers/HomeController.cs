@@ -1,14 +1,11 @@
 ﻿using Cinema.Data;
 using Cinema.Data.Enums;
-using Cinema.Utilty.DBInitializer;
 using Cinema.ViewModel;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles =$"{SD.SuperAdmin},{SD.Admin},{SD.Campany},{SD.Employee}")]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context = new();

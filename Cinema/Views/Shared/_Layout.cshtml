@@ -229,26 +229,13 @@
                     </button>
 
                     <div class="dropdown">
-                        <div class="dropdown">  
-                            <a class="text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">  
-                                <i class="fas fa-user-circle fa-lg"></i> @(User.Identity?.Name ?? "Guest")  
-                            </a>  
-                            
-                            <ul class="dropdown-menu dropdown-menu-end">  
-                                @if (User is not null && User.Identity.IsAuthenticated)
-                                {
-                                    <li><a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Profile">Profile</a></li>
-                                    <li><a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="ChangePassword">Change Password</a></li>
-                                    <li><a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Logout">Logout</a></li>
-                                }else{
-                                    <li><a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a></li>  
-                                   <li><a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Register">Register</a></li>
-                                }
-                       
-                                
-                                  
-                            </ul>  
-                        </div>
+                        <a class="text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg"></i> Mina Romany
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Login" >Login</a></li>
+                            <li><a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Logout">Logout</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>

@@ -1,8 +1,7 @@
 ﻿
 using Cinema.Data.Enums;
-using Cinema.Utilty.DBInitializer;
+
 using Cinema.ViewModel;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -11,8 +10,6 @@ using System.Threading.Tasks;
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin},{SD.Campany},{SD.Employee}")]
-
     public class MoviesController : Controller
     {
         //  private readonly ApplicationDbContext _Context = new();
@@ -47,7 +44,6 @@ namespace Cinema.Areas.Admin.Controllers
 
             return View(movies);
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
 
         public async Task<IActionResult> Create()
         {
@@ -67,7 +63,7 @@ namespace Cinema.Areas.Admin.Controllers
         }
         [HttpPost]
 
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
+
         public async Task<IActionResult> Create(CinemawithCategoryVm vm, IFormFile ImgUrl)
         {
             ModelState.Remove("ImgUrl");
@@ -146,7 +142,6 @@ namespace Cinema.Areas.Admin.Controllers
                 return MovieStatus.Expired;
 
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public async Task<IActionResult> Edit(int id)
         {
             var movie = await _moviesRepository.GetOneAsync(
@@ -176,7 +171,7 @@ namespace Cinema.Areas.Admin.Controllers
 
             return View(vm);
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
+
         [HttpPost]
         public async Task<IActionResult> Edit(CinemawithCategoryVm vm, IFormFile ImgUrl)
         {
@@ -271,7 +266,7 @@ namespace Cinema.Areas.Admin.Controllers
             TempData["success-notification"] = "Movie updated successfully!";
             return RedirectToAction(nameof(Index));
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
+
         public async Task<IActionResult> Delete(int id)
         {
 

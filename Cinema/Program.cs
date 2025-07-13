@@ -1,6 +1,5 @@
 
 using Cinema.Utilty;
-using Cinema.Utilty.DBInitializer;
 using Elfie.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -12,19 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(
     option=>option.UseSqlServer("Data Source =.; Initial Catalog = Cinema; Integrated Security = True; TrustServerCertificate = True"));
-builder.Services.AddScoped<IDBInitializer, DBInitializer>();
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-{
-    options.User.RequireUniqueEmail = true;
-}).AddEntityFrameworkStores<ApplicationDbContext>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Identity/Account/Login";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-});
-
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -32,7 +20,6 @@ builder.Services.AddScoped<ICinemaRepository, CinemaRepository>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IActorMoviesRepository, ActorMoviesRepository>();
 builder.Services.AddScoped<IActorRepository, ActorRepository>();
-builder.Services.AddScoped<IApplicationUserOtpRepository, ApplicationUserOtpRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -45,7 +32,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -54,11 +41,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-using (var scope = app.Services.CreateScope())
-{
-    var dbInitializer = scope.ServiceProvider.GetRequiredService<IDBInitializer>();
-    dbInitializer.Initialze();
-}
 
 
 app.Run();

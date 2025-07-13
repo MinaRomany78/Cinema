@@ -19,19 +19,6 @@
         border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .link-forgot {
-        color: #1abc9c;
-        font-size: 0.9rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-        .link-forgot:hover {
-            text-decoration: underline;
-            color: #16a085;
-        }
-
-
         .card-custom h3 {
             text-align: center;
             margin-bottom: 25px;
@@ -110,79 +97,43 @@
         color: #fff;
     }
 </style>
-
+@if (TempData["error-notification"] is not null)
+{
+    @section Scripts {
+        <script>
+            toastr.error('@TempData["error-notification"]')
+        </script>
+    }
+}
 <div class="card-custom">
     <h3>Login</h3>
 
     <form asp-action="Login" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
         <div class="mb-3">
             <input asp-for="UserNameOrEmail" class="form-control" placeholder="Username or Email" />
             <span asp-validation-for="UserNameOrEmail" class="text-danger"></span>
         </div>
-        <div class="mb-3 position-relative">
-            <input asp-for="Password" type="password" class="form-control" placeholder="Password" id="passwordInput" />
+
+        <div class="mb-3">
+            <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
             <span asp-validation-for="Password" class="text-danger"></span>
-            <button type="button" class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2" onclick="togglePassword('passwordInput', this)">
-                <i class="fa fa-eye"></i>
-            </button>
         </div>
-        <div class="text-end mt-2">
-            <a asp-action="ForgetPassword" class="link-forgot">Forgot your password?</a>
-        </div>
-        <div class="form-group form-check">
-            <label class="form-check-label">
-                <input class="form-check-input" asp-for="RememberMe" /> @Html.DisplayNameFor(model => model.RememberMe)
+
+        <div class="mb-3 form-check text-start">
+            <input class="form-check-input" asp-for="RememberMe" />
+            <label class="form-check-label" asp-for="RememberMe">
+                Remember me
             </label>
         </div>
 
         <button type="submit" class="btn btn-custom">Login</button>
     </form>
-    
-        
- 
+
     <div class="mt-4 text-center">
         Don't have an account? <a asp-action="Register">Register here!</a>
-    </div>
-    <div class="mt-4 text-center">
-        If the link of Confirmation take 24 houres   <a asp-action="ResendEmailConfirmation">Resend Email Confirmation</a>
     </div>
 </div>
 
 
-<script>
-    function togglePassword(inputId, btn) {
-        const input = document.getElementById(inputId);
-        const icon = btn.querySelector("i");
-        if (input.type === "password") {
-            input.type = "text";
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
-        } else {
-            input.type = "password";
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
-        }
-    }
-</script>
-@section Scripts {
-    @if (TempData["success-notification"] is not null)
-    {
-        <script>
-            toastr.success('@TempData["success-notification"]')
-        </script>
-    }
-
-    @if (TempData["error-notification"] is not null)
-    {
-
-        <script>
-            toastr.error('@TempData["error-notification"]')
-        </script>
-
-    }
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

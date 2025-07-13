@@ -1,15 +1,11 @@
 ﻿
 using Cinema.Repositories.IRepositories;
-using Cinema.Utilty.DBInitializer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin},{SD.Campany},{SD.Employee}")]
-
     public class CategoriesController : Controller
     {
         private ICategoryRepository _categoryRepository;
@@ -22,12 +18,10 @@ namespace Cinema.Areas.Admin.Controllers
             var categories = await _categoryRepository.GetAsync();
             return View(categories);
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Create()
         {
             return View();
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         [HttpPost]
         public async Task<IActionResult> Create(Models.Category category)
         {
@@ -39,7 +33,6 @@ namespace Cinema.Areas.Admin.Controllers
             }
             return View(category);
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public async Task<IActionResult> Edit(int id)
         {
             var category = await _categoryRepository.GetOneAsync(c => c.Id == id);
@@ -48,10 +41,8 @@ namespace Cinema.Areas.Admin.Controllers
                 return NotFound();
             }
             return View(category);
-        }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
+        } 
         [HttpPost]
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public async Task<IActionResult> Edit(Models.Category category)
         {
             if (ModelState.IsValid)
@@ -62,7 +53,6 @@ namespace Cinema.Areas.Admin.Controllers
             }
             return View(category);
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public async Task<IActionResult> Delete(int id)
         {
             var category = await _categoryRepository.GetOneAsync(c => c.Id == id);

@@ -1,7 +1,5 @@
 ﻿using Cinema.Data;
 using Cinema.Models;
-using Cinema.Utilty.DBInitializer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -10,7 +8,6 @@ using System.Threading.Tasks;
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles=$"{SD.SuperAdmin},{SD.Admin},{SD.Campany},{SD.Employee}")]
     public class ActorsController : Controller
     {
         //private readonly ApplicationDbContext _context = new();
@@ -24,14 +21,12 @@ namespace Cinema.Areas.Admin.Controllers
             var actors =await _actorRepository.GetAsync();
             return View(actors);
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Create()
         {
 
             return View(new Actor());
         }
         [HttpPost]
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public async Task<IActionResult> Create(Actor actor,IFormFile ProfilePicture)
         {
             if (ProfilePicture is not null&& ProfilePicture.Length>0 )
@@ -55,7 +50,6 @@ namespace Cinema.Areas.Admin.Controllers
             }
             return NotFound();
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public async Task<IActionResult> Edit(int id)
         {
             var actor = await _actorRepository.GetOneAsync(c => c.Id == id);
@@ -65,7 +59,6 @@ namespace Cinema.Areas.Admin.Controllers
             }
             return NotFound();
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         [HttpPost]
         public async Task<IActionResult> Edit(Actor actor,IFormFile ProfilePicture)
         {
@@ -106,7 +99,7 @@ namespace Cinema.Areas.Admin.Controllers
             
             
         }
-        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
+        
         public async Task<IActionResult> Delete(int id)
         {
             var actor = await _actorRepository.GetOneAsync(c => c.Id == id);
