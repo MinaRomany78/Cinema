@@ -53,6 +53,7 @@ namespace Cinema.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(AdminRegisterVm vm)
         {
+            ModelState.Remove("userId"); 
             if (!ModelState.IsValid)
             {
                 // إعادة تحميل قائمة الرولز لو فشل التحقق
@@ -71,11 +72,10 @@ namespace Cinema.Areas.Admin.Controllers
                 FirstName = vm.FirstName,
                 LastName = vm.LastName,
                 Address = vm.Address,
-                PhoneNumber = vm.PhoneNumber,
                 EmailConfirmed = true
             };
 
-            var result = await _userManager.CreateAsync(user, vm.Password);
+            var result = await _userManager.CreateAsync(user, "User123+");
             if (result.Succeeded)
             {
                 // 🟢 نضيف المستخدم للرول المحدد
@@ -133,6 +133,7 @@ namespace Cinema.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(AdminRegisterVm vm)
         {
+            ModelState.Remove("Id"); 
             if (!ModelState.IsValid)
             {
                 // إعادة تحميل قائمة الرولز لو فشل التحقق
@@ -153,16 +154,13 @@ namespace Cinema.Areas.Admin.Controllers
             user.FirstName = vm.FirstName;
             user.LastName = vm.LastName;
             user.Address = vm.Address;
-            user.PhoneNumber = vm.PhoneNumber;
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
                 // 🟢 نحدث الرول للمستخدم
                 var currentRoles = await _userManager.GetRolesAsync(user);
-                if (currentRoles.Contains(vm.Role))
-                {
-                    await _userManager.RemoveFromRoleAsync(user, vm.Role);
-                }
+               
+               await _userManager.RemoveFromRolesAsync(user, currentRoles);
                 await _userManager.AddToRoleAsync(user, vm.Role);
                 TempData["success-notification"] = "User updated successfully!";
                 return RedirectToAction("Index");
