@@ -20,6 +20,9 @@ namespace Cinema.Data
         public DbSet<Models.Cinema> Cinemas { get; set; }
         public DbSet<ActorMovie> ActorMovies { get; set; }
         public DbSet<ApplicationUserOtp> ApplicationUserOtps { get; set; }
+        public DbSet<Ticket> tickets { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         //Legacy code for migrations
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -27,10 +30,7 @@ namespace Cinema.Data
             optionsBuilder.UseSqlServer("Data Source =.; Initial Catalog = Cinema; Integrated Security = True; TrustServerCertificate = True");
 
         }
-        public DbSet<Cinema.ViewModel.ResetPasswordVM> ResetPasswordVM { get; set; } = default!;
-        public DbSet<Cinema.ViewModel.ProfileVm> ProfileVm { get; set; } = default!;
-        public DbSet<ChangePasswordVm> ChangePasswordVm { get; set; } = default!;
-        public DbSet<Cinema.ViewModel.AdminRegisterVm> AdminRegisterVm { get; set; } = default!;
+       
         
 
     }

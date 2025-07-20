@@ -26,6 +26,7 @@
                         <th scope="col">Name</th>
                         <th scope="col">Description</th>
                         <th scope="col">Address</th>
+                        <th scope="col">Capacity</th>
                         @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
                         {
                             <th scope="col" class="text-end">Actions</th>
@@ -47,6 +48,7 @@
                                 <td>@item.Description</td>
                             }
                             <td>@item.Address</td>
+                            <td>@item.HallCapacity</td>
                             @if (User.IsInRole($"{SD.Admin}") || User.IsInRole($"{SD.SuperAdmin}"))
 
                             {
@@ -59,6 +61,7 @@
 
                                 </td>
                             }
+                           
                         </tr>
                     }
                 </tbody>

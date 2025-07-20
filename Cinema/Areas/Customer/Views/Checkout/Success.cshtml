@@ -1,0 +1,163 @@
+﻿@using Cinema.ViewModel
+@model CheckoutSuccessVM
+
+@{
+    ViewData["Title"] = "Cinema Ticket";
+}
+
+<style>
+    body {
+        background-color: #f5f5f5;
+    }
+
+    .ticket-box {
+        max-width: 700px;
+        margin: 50px auto;
+        padding: 40px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', sans-serif;
+        color: #333;
+    }
+
+    .ticket-header {
+        text-align: center;
+        border-bottom: 2px dashed #ccc;
+        margin-bottom: 30px;
+        padding-bottom: 10px;
+    }
+
+        .ticket-header h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .ticket-header p {
+            font-size: 16px;
+            margin: 0;
+        }
+
+    .ticket-info dt {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .ticket-info dd {
+        margin-bottom: 15px;
+    }
+
+    .ticket-table th, .ticket-table td {
+        vertical-align: middle;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .ticket-table thead {
+        background-color: #2c3e50;
+        color: white;
+    }
+
+    .total-price {
+        text-align: right;
+        font-size: 18px;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-top: 20px;
+    }
+
+    .btn-group {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+        .btn-group a,
+        .btn-group button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+        }
+
+    .btn-success {
+        background-color: #27ae60;
+        border-color: #27ae60;
+    }
+
+        .btn-success:hover {
+            background-color: #219150;
+        }
+
+    .btn-secondary {
+        background-color: #7f8c8d;
+        border-color: #7f8c8d;
+    }
+
+</style>
+
+<div class="ticket-box" id="invoice">
+    <div class="ticket-header">
+        <h2>Cinema E-Ticket</h2>
+        <p><strong>Order #: </strong> @Model.Order.Id</p>
+    </div>
+
+    <dl class="row ticket-info">
+        <dt class="col-sm-4">🎟 Status:</dt>
+        <dd class="col-sm-8">@Model.Order.OrderStatus</dd>
+
+        <dt class="col-sm-4">💳 Payment ID:</dt>
+        <dd class="col-sm-8">@Model.Order.PaymentId</dd>
+
+        <dt class="col-sm-4">🕒 Date:</dt>
+        <dd class="col-sm-8">@Model.Order.Date.ToString("yyyy-MM-dd HH:mm")</dd>
+    </dl>
+
+    <h5 class="mb-3">🎬 Tickets</h5>
+    <table class="table table-bordered ticket-table">
+        <thead>
+            <tr>
+                <th>Movie</th>
+                <th>Seats</th>
+                <th>History</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderItems)
+            {
+                <tr>
+                    <td>@item.Movie?.Name</td>
+                    <td>@item.Selected</td>
+                    <td>@item.datetime</td>
+                    <td>@item.TotalPrice.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="total-price">
+        Total: @Model.OrderItems.Sum(x => x.TotalPrice).ToString("C")
+    </div>
+
+    <div class="btn-group">
+        <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Home</a>
+        <button class="btn btn-success" onclick="downloadInvoice()">Download PDF</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function downloadInvoice() {
+            const invoice = document.getElementById("invoice");
+            html2pdf().from(invoice).set({
+                margin: 1,
+                filename: 'Ticket.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            }).save();
+        }
+    </script>
+}

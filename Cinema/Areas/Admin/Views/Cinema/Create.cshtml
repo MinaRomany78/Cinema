@@ -43,6 +43,11 @@
                     <input type="text" class="form-control shadow-sm" id="address" name="Address" value="@Model.Address">
                     <span class="text-danger" asp-validation-for="Address"></span>
                 </div>
+                <div class="mb-3">
+                    <label for="HallCapacity" class="form-label fw-semibold">Capacity</label>
+                    <input type="number" class="form-control shadow-sm" id="address" name="HallCapacity" value="@Model.HallCapacity">
+                    <span class="text-danger" asp-validation-for="HallCapacity"></span>
+                </div>
 
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-success">
