@@ -3,3 +3,5 @@ Identity:-
 https://drive.google.com/file/d/1RHUxr-nd6_0XJbQuwMkZ2nNXOwnJO6_z/view?usp=sharing
 Full Identity:-
 https://drive.google.com/file/d/1-k5VfrNjZhlbqVk9oToHjscPE_Q28tlh/view?usp=drive_link
+CartWithStripe:-
+https://drive.google.com/file/d/1x8nfxMof6mV9s-UmxpNUWkq8gwANEFW2/view?usp=drive_link
