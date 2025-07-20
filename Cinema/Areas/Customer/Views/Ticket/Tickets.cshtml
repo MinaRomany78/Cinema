@@ -1,0 +1,112 @@
+﻿@model IEnumerable<Ticket>
+
+<form method="post">
+    <div class="container my-5">
+        @if (Model is null || !Model.Any() || Model.All(m => m.Movie == null))
+        {
+            <div class="alert alert-info text-center py-5 rounded-4 shadow-sm">
+                <h4 class="text-uppercase mb-3">Your cart is empty</h4>
+                <p class="mb-0 text-muted">Start booking tickets now and they'll appear here!</p>
+            </div>
+        }
+        else
+        {
+            decimal totalPrice = 0;
+
+            foreach (var item in Model)
+            {
+                if (item.Movie is null) continue;
+                totalPrice += item.TotalPrice;
+
+                <div class="card cart-item border-0 shadow-sm rounded-4 mb-4 animate__animated animate__fadeIn">
+                    <div class="row g-0 align-items-center bg-dark text-white">
+                        <!-- Movie Image -->
+                        <div class="col-md-2 p-3">
+                            <img src="~/assets/images/movies/@item.Movie.ImgUrl" alt="@item.Movie.Name"
+                                 class="img-fluid rounded-3 border" style="height: 120px; object-fit: cover;" />
+                        </div>
+
+                        <!-- Movie Info -->
+                        <div class="col-md-6 px-3">
+                            <h5 class="fw-bold mb-1">@item.Movie.Name</h5>
+                            <p class="mb-1 small text-light">
+                                @(item.Movie.Description?.Length > 80
+                                                        ? item.Movie.Description.Substring(0, 80) + "..."
+                                                        : item.Movie.Description)
+                    </p>
+                    <p class="mb-1 text-muted small">📅 @item.Date.ToString("MMM dd, yyyy - hh:mm tt")</p>
+                    <p class="mb-0 fw-semibold text-info">
+                        🎟 @item.Count x $@item.Movie.Price =
+                        <span class="text-success">$@item.TotalPrice</span>
+                    </p>
+                </div>
+
+                        <!-- Actions -->
+                        <div class="col-md-4 text-end pe-4">
+                            @* <div class="btn-group mb-2" role="group">
+                                <a href="/Customer/ticket/DecrementCount?movieId=@item.MovieId" class="btn btn-outline-light btn-sm px-3">
+                                    <i class="bi bi-dash"></i>
+                                </a>
+                                <span class="btn btn-light btn-sm px-3 disabled">@item.Count</span>
+                                <a href="/Customer/ticket/IncrementCount?movieId=@item.MovieId" class="btn btn-outline-light btn-sm px-3">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </div> *@
+
+                            <a href="/Customer/ticket/Edit?movieId=@item.MovieId" class="btn btn-sm btn-outline-primary mt-1">
+                                <i class="bi bi-pencil-square me-1"></i> Edit
+                            </a>
+
+
+                            <br />
+                            <a href="/Customer/ticket/Delete?movieId=@item.MovieId" class="btn btn-sm btn-outline-danger mt-1">
+                                <i class="bi bi-trash-fill me-1"></i> Remove
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                }
+
+            <!-- TOTAL & PAY -->
+            <div class="card border-0 shadow-sm rounded-4 mt-5 bg-dark text-white">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 offset-md-4">
+                            <ul class="list-group mb-4">
+                                <li class="d-flex justify-content-between align-items-center fs-5">
+                                    <strong>Total</strong>
+                                    <span class="text-success fw-bold">$@totalPrice.ToString("0.00")</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 offset-md-5">
+                            <a href="/Customer/Ticket/Pay" class="btn btn-success w-100 py-2">Pay</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</form>
+
+@section Scripts {
+    @if (TempData["success-notification"] is not null)
+    {
+        <script>
+            toastr.success('@TempData["success-notification"]')
+        </script>
+    }
+
+    @if (TempData["error-notification"] is not null)
+    {
+        <script>
+            toastr.error('@TempData["error-notification"]')
+        </script>
+    }
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

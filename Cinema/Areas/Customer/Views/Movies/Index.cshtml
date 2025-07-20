@@ -31,6 +31,7 @@ else
                                 <div class="movie-info-details fs-6 mb-3">
                                     <p><strong>🎟 Price:</strong> <span class="badge bg-info text-dark px-2">$@item.Price</span></p>
                                     <p><strong>🏢 Cinema:</strong> @item.Cinema.Name</p>
+                                    <p><strong>🔢 Capacity:</strong> @item.Cinema.HallCapacity</p>
                                     <p><strong>📅 Start:</strong> @item.StartDate.ToString("MMM d, yyyy")</p>
                                     <p><strong>⏳ End:</strong> @item.EndDate.ToString("MMM d, yyyy")</p>
                                     <p><strong>🎬 Category:</strong> <a href="/customer/Movies/index?CategoryId=@item.Category.Id" class="category-link">@item.Category.Name</a></p>
@@ -72,7 +73,7 @@ else
 
                                 @if (item.MovieStatus == MovieStatus.Available)
                                 {
-                                    <a href="~/customer/Movies/details?id=@item.Id"
+                                    <a href="~/customer/Ticket/Index?id=@item.Id"
                                        class="btn btn-glow btn-sm">Ticket</a>
                                 }
                                 else

@@ -12,6 +12,7 @@ namespace Cinema.Models
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string CinemaLogo { get; set; } = string.Empty;
+        public int HallCapacity { get; set; } 
         [Required]
         public string Address { get; set; } = string.Empty;
         public ICollection<Movie> Movies { get; set; } = new List<Movie>();

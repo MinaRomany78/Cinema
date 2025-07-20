@@ -1,0 +1,290 @@
+﻿@using Cinema.ViewModel
+@model SeatPickerViewModel
+
+@if (Model?.Movie == null)
+{
+    <div class="alert alert-danger text-center">Movie data not found.</div>
+}
+else
+{
+    <form method="post" asp-action="Edit" asp-controller="Ticket" asp-area="Customer"
+          onsubmit="return validateAndSetTotalPrice()" class="movie-ticket my-5 mx-auto">
+
+        <!-- Hidden Inputs -->
+        <input type="hidden" name="MovieId" value="@Model.Movie.Id" />
+        <input type="hidden" id="Price" value="@Model.Movie.Price" />
+        <input type="hidden" name="Time" id="SelectedTimeHidden" />
+        <input type="hidden" name="TotalPrice" id="TotalPrice" />
+        <input type="hidden" name="SelectedSeats" id="SelectedSeats" />
+
+        <!-- Seat Selection -->
+        <div id="seatSelection" class="mt-4"></div>
+
+        <!-- Movie Image -->
+        <div class="ticket-header">
+            <img src="/assets/images/movies/@Model.Movie.ImgUrl" alt="@Model.Movie.Name" />
+        </div>
+
+        <!-- Divider -->
+        <div class="ticket-divider"></div>
+
+        <!-- Ticket Content -->
+        <div class="ticket-body p-4">
+            <h2 class="fw-bold mb-2">@Model.Movie.Name</h2>
+            <p class="text-light small mb-3">
+                @(Model.Movie.Description?.Length > 150
+                            ? Model.Movie.Description.Substring(0, 150) + "..."
+                            : Model.Movie.Description)
+        </p>
+
+            <ul class="list-unstyled small text-light">
+                <li><strong>🎟️ Price:</strong> $@Model.Movie.Price</li>
+                <li><strong>🏢 Cinema:</strong> @Model.Movie.Cinema?.Name</li>
+                <li><strong>🎬 Category:</strong> @Model.Movie.Category?.Name</li>
+                <li><strong>🗓️ Date Range:</strong> @Model.Movie.StartDate:MMM dd, yyyy – @Model.Movie.EndDate:MMM dd, yyyy</li>
+            </ul>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label text-light">Date</label>
+                    <input type="date" id="selectedDate" class="form-control"
+                           min="@Model.Movie.StartDate:yyyy-MM-dd"
+                           max="@Model.Movie.EndDate:yyyy-MM-dd" required />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label text-light">Time</label>
+                    <select id="showTimes" class="form-select" required></select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label text-light">Number of Tickets</label>
+                    <input type="number" name="Count" id="ticketCount" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="mt-4 text-end">
+                <button type="submit" class="btn btn-glow">Save Changes</button>
+            </div>
+        </div>
+    </form>
+}
+
+
+<style>
+    /* نفس التنسيقات السابقة */
+    .movie-ticket {
+        max-width: 700px;
+        background: #1e2a38;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    .ticket-header img {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .ticket-body {
+        background: #2c3e50;
+    }
+
+    .ticket-divider {
+        height: 2px;
+        background-image: repeating-linear-gradient(to right, #1abc9c, #1abc9c 10px, transparent 10px, transparent 20px);
+    }
+
+    .btn-glow {
+        background: #1abc9c;
+        border: none;
+        color: white;
+        font-weight: bold;
+        padding: 10px 24px;
+        border-radius: 30px;
+        box-shadow: 0 0 12px #1abc9c80;
+        transition: 0.3s;
+    }
+
+        .btn-glow:hover {
+            background: #16a085;
+            box-shadow: 0 0 20px #1abc9cb3;
+        }
+
+    #seatSelection {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 8px;
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #34495e;
+        border-radius: 15px;
+    }
+
+        #seatSelection button {
+            padding: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            transition: 0.2s ease-in-out;
+        }
+
+            #seatSelection button.btn-outline-success:hover {
+                background-color: #1abc9c;
+                color: white;
+            }
+
+            #seatSelection button.btn-success {
+                background-color: #1abc9c !important;
+                border-color: #16a085 !important;
+            }
+
+            #seatSelection button.btn-secondary {
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dateInput = document.getElementById("selectedDate");
+        const showTimes = document.getElementById("showTimes");
+        const ticketCountInput = document.getElementById("ticketCount");
+        const seatSelection = document.getElementById("seatSelection");
+        const selectedSeatsInput = document.getElementById("SelectedSeats");
+        const movieId = @Model.Movie.Id;
+
+        let selectedSeats = [];
+
+        dateInput.addEventListener("change", renderTimes);
+        ticketCountInput.addEventListener("input", maybeRenderSeats);
+        showTimes.addEventListener("change", maybeRenderSeats);
+
+        function renderTimes() {
+            const selectedDate = new Date(dateInput.value);
+            showTimes.innerHTML = "";
+            if (!isNaN(selectedDate)) {
+                for (let hour = 9; hour <= 21; hour += 3) {
+                    const time = `${hour.toString().padStart(2, '0')}:00`;
+                    const option = document.createElement("option");
+                    option.value = time;
+                    option.text = time;
+                    showTimes.appendChild(option);
+                }
+            }
+        }
+
+        async function maybeRenderSeats() {
+            const count = parseInt(ticketCountInput.value);
+            const date = dateInput.value;
+            const time = showTimes.value;
+            const capacity = @Model.Movie.Cinema.HallCapacity;
+
+            if (!isNaN(count) && count > 0 && date && time) {
+                const takenSeats = await fetch(`/Customer/Ticket/GetTakenSeats?movieId=${movieId}&date=${date}&time=${time}`)
+                    .then(res => res.json())
+                    .catch(() => []);
+                renderSeats(count, capacity, takenSeats);
+            } else {
+                seatSelection.innerHTML = '';
+            }
+        }
+
+        function renderSeats(count, hallCapacity, takenSeats = []) {
+            seatSelection.innerHTML = '';
+            selectedSeats = [];
+
+            for (let i = 1; i <= hallCapacity; i++) {
+                const seatId = `S${i}`;
+                const isTaken = takenSeats.includes(seatId);
+                const seatBtn = document.createElement('button');
+
+                seatBtn.type = "button";
+                seatBtn.className = `btn btn-sm ${isTaken ? 'btn-secondary' : 'btn-outline-success'}`;
+                seatBtn.textContent = seatId;
+                seatBtn.disabled = isTaken;
+
+                if (!isTaken) {
+                    seatBtn.addEventListener('click', () => {
+                        if (selectedSeats.includes(seatId)) {
+                            selectedSeats = selectedSeats.filter(s => s !== seatId);
+                            seatBtn.classList.replace("btn-success", "btn-outline-success");
+                        } else if (selectedSeats.length < count) {
+                            selectedSeats.push(seatId);
+                            seatBtn.classList.replace("btn-outline-success", "btn-success");
+                        } else {
+                            alert("You have selected the maximum number of seats.");
+                        }
+
+                        selectedSeatsInput.value = selectedSeats.join(",");
+                    });
+                }
+
+                seatSelection.appendChild(seatBtn);
+            }
+        }
+
+        // Fill old values from the model
+        document.getElementById("ticketCount").value = @Model.Count;
+        document.getElementById("selectedDate").value = "@Model.Time.ToString("yyyy-MM-dd")";
+
+        setTimeout(() => {
+            renderTimes();
+            setTimeout(() => {
+                document.getElementById("showTimes").value = "@Model.Time.ToString("HH:mm")";
+                maybeRenderSeats().then(() => {
+                    let previousSeats = "@Model.SelectedSeats".split(",");
+                    previousSeats.forEach(seatId => {
+                        const btn = [...seatSelection.children].find(b => b.textContent === seatId);
+                        if (btn && !btn.disabled) btn.click(); // simulate seat selection
+                    });
+                });
+            }, 300);
+        }, 300);
+    });
+
+    function validateAndSetTotalPrice() {
+        const count = parseInt(document.getElementById("ticketCount").value);
+        const price = parseFloat(document.getElementById("Price").value);
+        const selectedTime = document.getElementById("showTimes").value;
+        const selectedDate = document.getElementById("selectedDate").value;
+        const selectedSeats = document.getElementById("SelectedSeats").value;
+
+        if (isNaN(count) || count <= 0) {
+            alert("Please enter a valid number of tickets.");
+            return false;
+        }
+
+        if (!selectedTime) {
+            alert("Please select a show time.");
+            return false;
+        }
+
+        if (!selectedSeats || selectedSeats.split(',').length !== count) {
+            alert("Please select the correct number of seats.");
+            return false;
+        }
+
+        const fullDateTime = selectedDate + "T" + selectedTime;
+        document.getElementById("SelectedTimeHidden").value = fullDateTime;
+        document.getElementById("TotalPrice").value = (count * price).toFixed(2);
+
+        return true;
+    }
+</script>
+
+@section Scripts {
+    @if (TempData["success-notification"] is not null)
+    {
+        <script>toastr.success('@TempData["success-notification"]')</script>
+    }
+
+    @if (TempData["error-notification"] is not null)
+    {
+        <script>toastr.error('@TempData["error-notification"]')</script>
+    }
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
